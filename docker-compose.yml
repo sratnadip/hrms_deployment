@@ -1,0 +1,49 @@
+version: '3.4'
+ 
+services:
+  springboot-service:
+    image: shamkumbhar47/backend:hrmslatest
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-service:3306/hrmsdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-service
+    networks:
+      - mynetwork
+    command: [ "sh", "-c", "until nc -z mysql-service 3306; do echo waiting for mysql; sleep 3; done; java -jar /app/hrms-0.0.1-SNAPSHOT.jar" ]
+
+  frontend:
+    image: shamkumbhar47/frontend:hrmslatest
+    ports:
+      - "4200:80"
+    depends_on:
+      - mysql-service
+    networks:
+      - mynetwork
+ 
+  mysql-service:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "hrmsdb"
+      MYSQL_PASSWORD: "root"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+networks:
+  mynetwork:
+
+volumes:
+  mysql-data:
