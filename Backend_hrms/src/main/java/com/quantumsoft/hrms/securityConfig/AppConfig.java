@@ -79,6 +79,7 @@ public class AppConfig {
                         .requestMatchers("/notification.html", "/notification.html/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/payroll/**").hasRole("ADMIN")
 
+                                     
 
                         // ✅ Allow WebSocket connections
                         .requestMatchers("/api/ws-notifications/**").permitAll()
@@ -97,6 +98,8 @@ public class AppConfig {
                                 "/swagger-resources", "/configuration/ui",
                                 "/configuration/security"
                         ).permitAll()
+
+                         .anyRequest().permitAll();              
 
                         // Allow public access to review & announcement-related APIs
                         .requestMatchers("/api/review-cycles/**").permitAll()
@@ -154,7 +157,9 @@ public class AppConfig {
  
     // Supports dynamic IPs/domains like localhost, EC2, etc.
 
-    configuration.setAllowedOriginPatterns(Arrays.asList("http://*", "https://*"));
+   // configuration.setAllowedOriginPatterns(Arrays.asList("http://*", "https://*"));
+
+    configuration.setAllowedOriginPatterns(List.of("*"));
  
     configuration.setAllowedHeaders(Arrays.asList("*"));
 
