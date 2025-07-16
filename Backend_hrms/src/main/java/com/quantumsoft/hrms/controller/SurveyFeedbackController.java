@@ -13,7 +13,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/surveys")
 @RequiredArgsConstructor
-@CrossOrigin("*")
+//@CrossOrigin("*")
 public class SurveyFeedbackController {
 
     private final SurveyFeedbackService service;
