@@ -13,8 +13,7 @@ services:
       - mysql-service
     networks:
       - mynetwork
-    command: [ "sh", "-c", "until nc -z mysql-service 3306; do echo waiting for mysql; sleep 3; done; java -jar /app/hrms-0.0.1-SNAPSHOT.jar" ]
-
+   
   frontend:
     image: shamkumbhar47/frontend:hrmslatest
     ports:
@@ -36,11 +35,6 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - mynetwork
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     
 networks:
   mynetwork:
