@@ -99,7 +99,7 @@ public class AppConfig {
                                 "/configuration/security"
                         ).permitAll()
 
-                         .anyRequest().permitAll();              
+                        // .anyRequest().permitAll();              
 
                         // Allow public access to review & announcement-related APIs
                         .requestMatchers("/api/review-cycles/**").permitAll()
