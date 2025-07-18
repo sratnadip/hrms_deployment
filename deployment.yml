@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: shamraokumbhar/frontend:latest
+          image: shamkumbhar47/frontend:k8shrms
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -62,7 +62,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: shamraokumbhar/backend:latest
+          image: shamkumbhar47/backend:k8shrms
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -76,7 +76,7 @@ spec:
             - name: MYSQL_PASSWORD
               value: "root"
             - name: MYSQL_DATABASE
-              value: "hrmsdb"
+              value: "hrmsportal"
 ---
 # MySQL Headless Service
 apiVersion: v1
@@ -116,4 +116,4 @@ spec:
             - name: MYSQL_ROOT_PASSWORD
               value: "root"
             - name: MYSQL_DATABASE
-              value: "hrmsdb"
+              value: "hrmsportal"
