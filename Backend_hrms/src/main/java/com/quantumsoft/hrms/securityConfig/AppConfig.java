@@ -147,3 +147,5 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             response.getWriter().write("{\"error\": \"Forbidden - You do not have access to this resource\"}");
         };
     }
+	
+}	
