@@ -11,7 +11,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
-//@CrossOrigin("*")
+@CrossOrigin("*")
 public class TicketController {
 
     private final TicketService ticketService;
