@@ -62,77 +62,73 @@ public class AppConfig {
         return config.getAuthenticationManager();
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        logger.info("in filter chain");
+  @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    logger.info("in filter chain");
 
-        return http
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(requests -> requests
+    return http
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(requests -> requests
 
-                        // Publicly accessible endpoints
-                        .requestMatchers("/api/user/login", "/api/user/forgotPwd", "/api/user/resetPwd", "/api/user/single/**", "/api/user/logout").permitAll()
-                        .requestMatchers("/api/admin/login").permitAll()
-                        .requestMatchers("/api/auditLog/logs").permitAll()
-                        .requestMatchers("/api/employees/single/**", "/api/employees/all").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/departments", "/api/departments/**").permitAll()
-                        .requestMatchers("/api/leaveType/get", "/api/leaveType/get/**").permitAll()
-                        .requestMatchers("/api/optionalHoliday/get").permitAll()
-                        .requestMatchers("/notification.html", "/notification.html/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/payroll/**").hasRole("ADMIN")
+                    // Publicly accessible endpoints
+                    .requestMatchers("/api/user/login", "/api/user/forgotPwd", "/api/user/resetPwd", "/api/user/single/**", "/api/user/logout").permitAll()
+                    .requestMatchers("/api/admin/login").permitAll()
+                    .requestMatchers("/api/auditLog/logs").permitAll()
+                    .requestMatchers("/api/employees/single/**", "/api/employees/all").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/departments", "/api/departments/**").permitAll()
+                    .requestMatchers("/api/leaveType/get", "/api/leaveType/get/**").permitAll()
+                    .requestMatchers("/api/optionalHoliday/get").permitAll()
+                    .requestMatchers("/notification.html", "/notification.html/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/payroll/**").hasRole("ADMIN")
 
-                                     
+                    // WebSocket
+                    .requestMatchers("/api/ws-notifications/**").permitAll()
 
-                        // ✅ Allow WebSocket connections
-                        .requestMatchers("/api/ws-notifications/**").permitAll()
+                    // Swagger + API docs
+                    .requestMatchers(
+                            "/swagger-ui.html",
+                            "/swagger-ui/**",
+                            "/swagger-resources/**",
+                            "/webjars/**",
+                            "/v3/api-docs",
+                            "/v3/api-docs/**",
+                            "/v3/api-docs.yaml",
+                            "/api/v1/auth/**",
+                            "/v2/api-docs",
+                            "/swagger-resources", "/configuration/ui",
+                            "/configuration/security"
+                    ).permitAll()
 
-                        // Swagger + API docs
-                        .requestMatchers(
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/swagger-resources/**",
-                                "/webjars/**",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs.yaml",
-                                "/api/v1/auth/**",
-                                "/v2/api-docs",
-                                "/swagger-resources", "/configuration/ui",
-                                "/configuration/security"
-                        ).permitAll()
+                    // Public access to review & announcement
+                    .requestMatchers("/api/review-cycles/**").permitAll()
+                    .requestMatchers("/api/announcements/visible").permitAll()
+                    .requestMatchers("/api/announcements/**").hasAnyRole("ADMIN", "HR")
 
-                        // .anyRequest().permitAll();              
+                    // Role-based access
+                    .requestMatchers("/api/user/users").hasAnyRole("ADMIN", "HR", "MANAGER", "FINANCE")
+                    .requestMatchers("/api/user/updateRole").hasAnyRole("ADMIN", "HR")
+                    .requestMatchers("/api/user/manageStatus/**").hasRole("ADMIN")
+                    .requestMatchers("/api/employees/myProfile").hasAnyRole("EMPLOYEE", "MANAGER", "HR", "ADMIN")
+                    .requestMatchers("/api/attendance/**").hasAnyRole("EMPLOYEE", "HR", "MANAGER", "FINANCE")
+                    .requestMatchers("/api/salaryStructure/get/by-employee/**").hasAnyRole("HR", "ADMIN", "EMPLOYEE")
+                    .requestMatchers("/api/employee-benefits/**").hasRole("HR")
+                    .requestMatchers("/api/documents/verify/**").hasAnyRole("HR", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/api/appreciations").hasAnyRole("EMPLOYEE", "MANAGER", "HR")
 
-                        // Allow public access to review & announcement-related APIs
-                        .requestMatchers("/api/review-cycles/**").permitAll()
-                        .requestMatchers("/api/announcements/visible").permitAll()
-                        .requestMatchers("/api/announcements/**").hasAnyRole("ADMIN", "HR")
-
-                        // Role-based access control
-                        .requestMatchers("/api/user/users").hasAnyRole("ADMIN", "HR", "MANAGER", "FINANCE")
-                        .requestMatchers("/api/user/updateRole").hasAnyRole("ADMIN", "HR")
-                        .requestMatchers("/api/user/manageStatus/**").hasRole("ADMIN")
-                        .requestMatchers("/api/employees/myProfile").hasAnyRole("EMPLOYEE", "MANAGER", "HR", "ADMIN")
-                        .requestMatchers("/api/attendance/**").hasAnyRole("EMPLOYEE", "HR", "MANAGER", "FINANCE")
-                        .requestMatchers("/api/salaryStructure/get/by-employee/**").hasAnyRole("HR", "ADMIN", "EMPLOYEE")
-                        .requestMatchers("/api/employee-benefits/**").hasRole("HR")
-                        .requestMatchers("/api/documents/verify/**").hasAnyRole("HR", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/appreciations").hasAnyRole("EMPLOYEE", "MANAGER", "HR")
+                    // All other /api/** endpoints require authentication
+                    .requestMatchers("/api/**").authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint(authenticationEntryPoint())
+                    .accessDeniedHandler(accessDeniedHandler())
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(appFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+}
 
 
-                        // All other /api/** endpoints require authentication
-                        .requestMatchers("/api/**").authenticated()
-                )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(authenticationEntryPoint())
-                        .accessDeniedHandler(accessDeniedHandler())
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(appFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
 
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
