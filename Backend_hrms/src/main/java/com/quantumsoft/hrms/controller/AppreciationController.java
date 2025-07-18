@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/appreciations")
-//@CrossOrigin("*")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class AppreciationController {
 
