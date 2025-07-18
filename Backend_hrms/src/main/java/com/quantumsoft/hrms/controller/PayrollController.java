@@ -17,7 +17,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.UUID;
 
-//@CrossOrigin("*")
+@CrossOrigin("*")
 @RestController
 @RequestMapping(value = "/api/payroll")
 public class PayrollController {
