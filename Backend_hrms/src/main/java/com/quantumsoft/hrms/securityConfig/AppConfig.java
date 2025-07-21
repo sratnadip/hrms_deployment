@@ -82,7 +82,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers(HttpMethod.POST, "/api/payroll/**").hasRole("ADMIN")
 
                     // WebSocket
-                    .requestMatchers("/api/ws-notifications/**").permitAll()
+                    //.requestMatchers("/api/ws-notifications/**").permitAll()
 
                     // Swagger + API docs
                     .requestMatchers(
