@@ -114,7 +114,9 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/api/employee-benefits/**").hasRole("HR")
                     .requestMatchers("/api/documents/verify/**").hasAnyRole("HR", "ADMIN")
                     .requestMatchers(HttpMethod.POST, "/api/appreciations").hasAnyRole("EMPLOYEE", "MANAGER", "HR")
-
+								   
+								   
+					.requestMatchers("/api", "/api/").permitAll()
                     // All other /api/** endpoints require authentication
                     .requestMatchers("/api/**").authenticated()
             )
