@@ -18,8 +18,10 @@ jobs:
           distribution: temurin
           java-version: 17
           
-      - name: Build with Maven
-        run: mvn -B clean package -DskipTests
+      - name: Build Backend with Maven
+        run: |
+          cd Backend_hrms
+          mvn -B clean package -DskipTests
 
       # Install Trivy
       - name: Install Trivy
@@ -41,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trivy-fs-report
-          path: fs-report.json 
+          path: fs-report.json
