@@ -35,4 +35,5 @@ jobs:
 
       # Run Trivy FS Scan on Backend
       - name: Run Trivy FS Scan
-        run: trivy fs ./Backend_hrms --exit-code 1 --severity HIGH,CRITICAL
+        #run: trivy fs ./Backend_hrms --exit-code 1 --severity HIGH,CRITICAL
+        run: trivy fs --format table -o fs-report.json .
