@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI with Maven + Trivy Scan
 
 on:
   push:
@@ -21,4 +21,18 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B clean package -DskipTests
-        working-directory: ./Backend_hrms 
+        working-directory: ./Backend_hrms
+
+      # Install Trivy
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      # Run Trivy FS Scan on Backend
+      - name: Run Trivy FS Scan
+        run: trivy fs ./Backend_hrms --exit-code 1 --severity HIGH,CRITICAL
