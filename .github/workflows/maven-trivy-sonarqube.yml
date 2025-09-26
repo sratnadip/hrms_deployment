@@ -1,0 +1,62 @@
+name: Java CI with Maven + Trivy + SonarQube
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Set up Java
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # 4️⃣ Build Backend with Maven
+      - name: Build Backend with Maven
+        run: |
+          cd Backend_hrms
+          mvn -B clean verify -DskipTests
+
+      # 5️⃣ SonarQube Scan
+      - name: SonarQube Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          cd Backend_hrms
+          mvn sonar:sonar \
+            -Dsonar.projectKey=hrms-backend \
+            -Dsonar.projectName="HRMS Backend" \
+            -Dsonar.host.url=${SONAR_HOST_URL} \
+            -Dsonar.login=${SONAR_TOKEN}
+
+      # 6️⃣ Install Trivy
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      # 7️⃣ Run Trivy FS Scan on Backend
+      - name: Run Trivy FS Scan
+        run: |
+          trivy fs ./Backend_hrms --format table -o fs-report.json 
+
+      # 8️⃣ Upload Trivy report as artifact
+      - name: Upload Trivy Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-fs-report
+          path: fs-report.json
