@@ -34,7 +34,7 @@ pipeline {
             steps {
                 dir('frontend') {
                     sh 'npm install'
-                    sh 'ng build --configuration production'
+                    sh 'ng build --configuration production --ssr=false'
                 }
             }
         }
