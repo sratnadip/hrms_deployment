@@ -26,6 +26,16 @@ public class AdminController {
 
     private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
+    @PostMapping(value = "/test-login", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<String> testLogin(@RequestBody AdminLoginDto adminLoginDto) {
+        // Simple test without authentication
+        if ("admin".equals(adminLoginDto.getUsername()) && "Admin@123".equals(adminLoginDto.getPassword())) {
+            return ResponseEntity.ok("{\"status\":\"success\",\"message\":\"Login successful\",\"token\":\"test-token\"}");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"status\":\"error\",\"message\":\"Invalid credentials\"}");
+        }
+    }
+
     /* Here AuthenticationManager will authenticate the request and if the request is authenticated then
        we are generating the jwt token */
     //   @PreAuthorize("hasAuthority('ADMIN') ")

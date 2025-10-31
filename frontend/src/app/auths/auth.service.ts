@@ -214,7 +214,7 @@ export class AuthService {
   adminLogin(username: string, password: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    return this.http.post(`${this.apiUrl}/admin/login`, { username, password }, {
+    return this.http.post(`${this.apiUrl}/admin/test-login`, { username, password }, {
       headers,
       responseType: 'text'  // you can keep this if your backend returns plain token
     }).pipe(
